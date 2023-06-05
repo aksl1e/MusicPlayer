@@ -17,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
@@ -25,10 +26,13 @@ import android.os.IBinder;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class PlayerService extends Service implements MediaPlayer.OnCompletionListener,
@@ -340,10 +344,12 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
 
-        Bitmap picture;
-        picture = imagesCache.getBitmapFromMemCache(player_songs_list.get(position).getPath());
+
+        Bitmap picture = imagesCache.getBitmapFromMemCache(player_songs_list.get(position).getPath());
         if(picture == null){
-            picture = BitmapFactory.decodeResource(getResources(), R.drawable.def_song_art);
+            byte[] pictureByte = getAlbumArt(player_songs_list.get(position).getPath());
+            picture = pictureByte != null ? BitmapFactory.decodeByteArray(pictureByte, 0, pictureByte.length)
+                    : BitmapFactory.decodeResource(getResources(), R.drawable.def_player_img);
         }
 
         int[] actions = {0,1,2};
@@ -371,6 +377,21 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
 
 
         startForeground(2, notification);
+    }
+
+    byte[] getAlbumArt(String uri) {
+        byte[] art = null;
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+
+        try {
+            retriever.setDataSource(uri);
+            art = retriever.getEmbeddedPicture();
+            retriever.release();
+        } catch (IOException e) {
+            Log.e("getEmbeddedPicture failed", "path:" + uri);
+        }
+
+        return art;
     }
 
     private int getCurrentState() {
