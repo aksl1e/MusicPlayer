@@ -20,8 +20,8 @@ import java.util.ArrayList;
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyHolder>{
 
-    private Context aContext;
-    private ArrayList<SongData> aFiles;
+    private final Context aContext;
+    private final ArrayList<SongData> aFiles;
 
     View view;
 
@@ -59,14 +59,11 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyHolder>{
                     .into(holder.album_img);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(aContext, AlbumSongs.class);
-                intent.putExtra("albumName", aFiles.get(position).getAlbum());
-                intent.putExtra("imagePath", aFiles.get(position).getPath());
-                aContext.startActivity(intent);
-            }
+        holder.itemView.setOnClickListener(view -> {
+            Intent intent = new Intent(aContext, AlbumSongs.class);
+            intent.putExtra("albumName", aFiles.get(position).getAlbum());
+            intent.putExtra("imagePath", aFiles.get(position).getPath());
+            aContext.startActivity(intent);
         });
     }
 
@@ -90,7 +87,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyHolder>{
         return art;
     }
 
-    public class MyHolder extends RecyclerView.ViewHolder{
+    public static class MyHolder extends RecyclerView.ViewHolder{
         ImageView album_img;
         TextView album_name;
         public MyHolder(@NonNull View itemView) {

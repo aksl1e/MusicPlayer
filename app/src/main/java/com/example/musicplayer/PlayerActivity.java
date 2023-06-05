@@ -5,7 +5,6 @@ import static com.example.musicplayer.AlbumSongsAdapter.albumSongs;
 import static com.example.musicplayer.MainActivity.allSongs;
 import static com.example.musicplayer.MainActivity.isOnRepeat;
 import static com.example.musicplayer.MainActivity.isOnShuffle;
-import static com.example.musicplayer.PlayerService.audioFocusRequest;
 import static com.example.musicplayer.PlayerService.audioManager;
 import static com.example.musicplayer.PlayerService.focusRequest;
 
@@ -32,7 +31,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -52,7 +50,7 @@ public class PlayerActivity extends AppCompatActivity implements
     TextView song_name, artist_name, timeTotal, timePlayed;
     ImageView cover_art, nextButton, previousButton, shuffleButton, repeatButton;
     FloatingActionButton playPauseButton;
-    static SeekBar seekBar;
+    SeekBar seekBar;
 
     static Uri current_song_path;
 
@@ -132,17 +130,14 @@ public class PlayerActivity extends AppCompatActivity implements
     }
 
     private void shuffleButtonSetListener() {
-        shuffleButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(isOnShuffle){
-                    isOnShuffle = false;
-                    shuffleButton.setImageResource(R.drawable.player_shuffle_off);
-                }
-                else {
-                    isOnShuffle = true;
-                    shuffleButton.setImageResource(R.drawable.player_shuffle_on);
-                }
+        shuffleButton.setOnClickListener(view -> {
+            if(isOnShuffle){
+                isOnShuffle = false;
+                shuffleButton.setImageResource(R.drawable.player_shuffle_off);
+            }
+            else {
+                isOnShuffle = true;
+                shuffleButton.setImageResource(R.drawable.player_shuffle_on);
             }
         });
     }
@@ -157,6 +152,7 @@ public class PlayerActivity extends AppCompatActivity implements
                     playerService.seekTo(i * 1000);
                 }
 
+                assert playerService != null;
                 if(playerService.isPlaying()){
                     playerService.showNotification(R.drawable.notification_pause, 1F);
                 } else {
@@ -187,7 +183,7 @@ public class PlayerActivity extends AppCompatActivity implements
                         timePlayed.setText(formattedTime(mCurrentPosition));
                     }
                 }
-                handler.postDelayed(this, 100);
+                handler.postDelayed(this, 1);
             }
         });
     }
@@ -295,10 +291,9 @@ public class PlayerActivity extends AppCompatActivity implements
                     playerService.stop();
                     playerService.release();
 
-                    if (isOnRepeat) {
-                        position = position;
-                    } else
+                    if (!isOnRepeat) {
                         position = ((position - 1) % player_songs_list.size());
+                    }
 
                     current_song_path = Uri.parse(player_songs_list.get(position).getPath());
 
@@ -379,7 +374,7 @@ public class PlayerActivity extends AppCompatActivity implements
     }
 
     private String formattedTime(int time) {
-        return String.format("%02d:%02d", time / 60, time % 60); // msec to "minutes:seconds" format
+        return String.format("%02d:%02d", time / 60, time % 60); // milliseconds to "minutes:seconds" format
     }
 
     private void initializeViews() {
@@ -397,6 +392,9 @@ public class PlayerActivity extends AppCompatActivity implements
         repeatButton = findViewById(R.id.player_repeat_button);
 
         seekBar = findViewById(R.id.player_seek_bar);
+
+        shuffleButton.setImageResource(isOnShuffle ? R.drawable.player_shuffle_on : R.drawable.player_shuffle_off);
+        repeatButton.setImageResource(isOnRepeat ? R.drawable.player_repeat_on : R.drawable.player_repeat_off);
     }
 
     private void metaDataSetting(Uri song_Uri){
@@ -420,6 +418,7 @@ public class PlayerActivity extends AppCompatActivity implements
 
     private Bitmap drawableToBitmap(int drawableId) {
         Drawable drawable = ContextCompat.getDrawable(this, drawableId);                                                 // Converting drawable to bitmap
+        assert drawable != null;
         Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -432,6 +431,7 @@ public class PlayerActivity extends AppCompatActivity implements
         Bitmap bitmap = BitmapFactory.decodeByteArray(art, 0, art.length);
         ImageAnimation(this, cover_art, bitmap);
         Palette.from(bitmap).generate(palette -> {
+            assert palette != null;
             Palette.Swatch swatch = palette.getDominantSwatch();
             ImageView gradient = findViewById(R.id.player_imageViewGradient);
             RelativeLayout mContainer = findViewById(R.id.player_mContainer);

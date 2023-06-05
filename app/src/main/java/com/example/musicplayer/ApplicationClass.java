@@ -12,8 +12,6 @@ public class ApplicationClass extends Application {
     public static final String ACTION_NEXT = "actionNext";
     public static final String ACTION_PLAY = "actionPlay";
 
-    public static final String ACTION_SEEK = "actionSeek";
-
     @Override
     public void onCreate() {
         super.onCreate();

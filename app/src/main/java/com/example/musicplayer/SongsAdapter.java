@@ -24,8 +24,8 @@ import java.util.ArrayList;
 
 public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.MyVieHolder> {
 
-    private Context mContext;
-    private ArrayList<SongData> mFiles;
+    private final Context mContext;
+    private final ArrayList<SongData> mFiles;
 
     public SongsAdapter(Context mContext, ArrayList<SongData> mFiles) {
         this.mContext = mContext;
@@ -47,33 +47,25 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.MyVieHolder>
 
         Bitmap albumArt = imagesCache.getBitmapFromMemCache(mFiles.get(position).getPath());
 
-       // if(albumArt == null){
-        //    byte[] albumArtByte = getAlbumArt(mFiles.get(position).getPath());
-       //     if(albumArtByte != null){
-       //         albumArt = BitmapFactory.decodeByteArray(albumArtByte, 0,albumArtByte.length);
-      //      }
-       // }
-
-
         if(albumArt != null){
             Glide.with(mContext).asBitmap()
                     .load(albumArt)
                     .into(holder.album_art);
         }
         else {
+            byte[] songArtAttempt = getAlbumArt(mFiles.get(position).getPath());
+            Bitmap bitmapAttempt = BitmapFactory.decodeByteArray(songArtAttempt, 0, songArtAttempt.length);
+
             Glide.with(mContext).asBitmap()
-                    .load(R.drawable.def_song_art)
+                    .load(bitmapAttempt != null ? bitmapAttempt : R.drawable.def_song_art)
                     .into(holder.album_art);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(mContext, PlayerActivity.class);
-                intent.putExtra("intentBy", "fromSongs");
-                intent.putExtra("position", position);
-                mContext.startActivity(intent);
-            }
+        holder.itemView.setOnClickListener(view -> {
+            Intent intent = new Intent(mContext, PlayerActivity.class);
+            intent.putExtra("intentBy", "fromSongs");
+            intent.putExtra("position", position);
+            mContext.startActivity(intent);
         });
     }
 
@@ -82,7 +74,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.MyVieHolder>
         return mFiles.size();
     }
 
-    public class MyVieHolder extends RecyclerView.ViewHolder{
+    public static class MyVieHolder extends RecyclerView.ViewHolder{
         TextView file_name;
         ImageView album_art;
 

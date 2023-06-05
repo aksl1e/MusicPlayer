@@ -5,6 +5,7 @@ import static com.example.musicplayer.MainActivity.imagesCache;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 
 public class AlbumSongsAdapter extends RecyclerView.Adapter<AlbumSongsAdapter.MyHolder>{
 
-    private Context aContext;
+    private final Context aContext;
     static ArrayList<SongData> albumSongs;
 
     View view;
@@ -53,19 +54,19 @@ public class AlbumSongsAdapter extends RecyclerView.Adapter<AlbumSongsAdapter.My
                     .into(holder.album_img);
         }
         else {
+            byte[] songArtAttempt = getAlbumArt(albumSongs.get(position).getPath());
+            Bitmap bitmapAttempt = BitmapFactory.decodeByteArray(songArtAttempt, 0, songArtAttempt.length);
+
             Glide.with(aContext)
-                    .load(R.drawable.player_icon)
+                    .load(bitmapAttempt != null ? bitmapAttempt : R.drawable.player_icon)
                     .into(holder.album_img);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(aContext, PlayerActivity.class);
-                intent.putExtra("intentBy", "fromAlbums");
-                intent.putExtra("position", position);
-                aContext.startActivity(intent);
-            }
+        holder.itemView.setOnClickListener(view -> {
+            Intent intent = new Intent(aContext, PlayerActivity.class);
+            intent.putExtra("intentBy", "fromAlbums");
+            intent.putExtra("position", position);
+            aContext.startActivity(intent);
         });
     }
 
@@ -89,7 +90,7 @@ public class AlbumSongsAdapter extends RecyclerView.Adapter<AlbumSongsAdapter.My
         return art;
     }
 
-    public class MyHolder extends RecyclerView.ViewHolder{
+    public static class MyHolder extends RecyclerView.ViewHolder{
         ImageView album_img;
         TextView album_name;
         public MyHolder(@NonNull View itemView) {

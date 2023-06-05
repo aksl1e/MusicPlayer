@@ -1,13 +1,11 @@
 package com.example.musicplayer;
 
-import static com.example.musicplayer.PlayerService.isKilled;
 import static com.example.musicplayer.PlayerService.mediaPlayer;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.Manifest;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -16,7 +14,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -52,10 +49,9 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
 
     static ArrayList<SongData> albums = new ArrayList<>();
 
-    static Context context;
+    Context context;
 
     PlayerService playerService = null;
-    PlayingActions playingActions = null;
 
     RelativeLayout miniPlayerContainer;
     TextView miniPlayer_song;
@@ -86,31 +82,22 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
         miniPlayer_next = findViewById(R.id.mini_player_next);
         miniPlayer_playPause = findViewById(R.id.mini_player_playPause);
 
-        miniPlayer_playPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                playerService.playerActions.playPauseButtonClicked();
-                refresh();
-            }
+        miniPlayer_playPause.setOnClickListener(view -> {
+            playerService.playerActions.playPauseButtonClicked();
+            refresh();
         });
 
-        miniPlayer_next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                playerService.playerActions.nextButtonClicked(false);
-                refresh();
-            }
+        miniPlayer_next.setOnClickListener(view -> {
+            playerService.playerActions.nextButtonClicked(false);
+            refresh();
         });
 
-        miniPlayerContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, PlayerActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                intent.putExtra("position", playerService.position);
-                intent.putExtra("intentBy", "fromMainActivity");
-                startActivity(intent);
-            }
+        miniPlayerContainer.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, PlayerActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.putExtra("position", playerService.position);
+            intent.putExtra("intentBy", "fromMainActivity");
+            startActivity(intent);
         });
     }
 
@@ -233,8 +220,8 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
 
     public static class ViewPagerAdapter extends FragmentPagerAdapter{
 
-        private ArrayList<Fragment> fragments;
-        private ArrayList<String> titles;
+        private final ArrayList<Fragment> fragments;
+        private final ArrayList<String> titles;
 
         public ViewPagerAdapter(@NonNull FragmentManager fm) {
             super(fm);
@@ -266,7 +253,6 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.R)
     public static ArrayList<SongData> getAllAudio(Context context){
         ArrayList<SongData> result = new ArrayList<>();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;

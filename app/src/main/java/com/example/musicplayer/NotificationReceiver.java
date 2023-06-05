@@ -3,7 +3,6 @@ package com.example.musicplayer;
 import static com.example.musicplayer.ApplicationClass.ACTION_NEXT;
 import static com.example.musicplayer.ApplicationClass.ACTION_PLAY;
 import static com.example.musicplayer.ApplicationClass.ACTION_PREVIOUS;
-import static com.example.musicplayer.ApplicationClass.ACTION_SEEK;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

@@ -1,13 +1,11 @@
 package com.example.musicplayer;
 
 import static com.example.musicplayer.MainActivity.albums;
-import static com.example.musicplayer.MainActivity.allSongs;
 
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;

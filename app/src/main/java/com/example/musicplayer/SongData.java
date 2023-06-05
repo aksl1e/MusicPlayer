@@ -3,15 +3,12 @@ package com.example.musicplayer;
 public class SongData {
 
     private String path;
-    private String title;
-    private String artist;
-    private String album;
-    private String duration;
+    private final String title;
+    private final String artist;
+    private final String album;
+    private final String duration;
     private String id;
 
-    public SongData(){
-
-    }
 
     public SongData(String album, String title, String duration, String path, String artist, String id) {
         this.path = path;
@@ -34,33 +31,20 @@ public class SongData {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
 
     public String getArtist() {
         return artist;
-    }
-
-    public void setArtist(String artist) {
-        this.artist = artist;
     }
 
     public String getAlbum() {
         return album;
     }
 
-    public void setAlbum(String album) {
-        this.album = album;
-    }
 
     public String getDuration() {
         return duration;
     }
 
-    public void setDuration(String duration) {
-        this.duration = duration;
-    }
 
     public String getId() {
         return id;

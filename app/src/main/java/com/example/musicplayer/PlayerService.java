@@ -6,7 +6,6 @@ import static com.example.musicplayer.ApplicationClass.ACTION_PREVIOUS;
 import static com.example.musicplayer.ApplicationClass.CHANNEL_ID_2;
 import static com.example.musicplayer.MainActivity.imagesCache;
 import static com.example.musicplayer.PlayerActivity.player_songs_list;
-import static com.example.musicplayer.PlayerActivity.running;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -26,8 +25,6 @@ import android.os.IBinder;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
