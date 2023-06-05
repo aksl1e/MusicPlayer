@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/mini_player_layout"
+        android:background="@color/black"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="5dp"
+        android:visibility="gone"
+        android:layout_alignParentBottom="true">
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/def_song_art"
+            android:id="@+id/mini_player_img"
+            android:scaleType="centerCrop"/>
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/notification_next"
+            android:id="@+id/mini_player_next"
+            android:scaleType="centerCrop"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10dp"/>
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/notification_pause"
+            android:id="@+id/mini_player_playPause"
+            android:scaleType="centerCrop"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10dp"
+            android:layout_toStartOf="@+id/mini_player_next"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/mini_player_song"
+            android:text="No Song"
+            android:textColor="@color/white"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="15dp"
+            android:layout_toEndOf="@id/mini_player_img"
+            android:textSize="18sp"
+            android:maxLines="1"
+            android:layout_toStartOf="@id/mini_player_playPause"
+            android:fontFamily="@font/spotify_bold"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/mini_player_artist"
+            android:text="No Artist"
+            android:textColor="@color/white"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="15dp"
+            android:layout_toEndOf="@id/mini_player_img"
+            android:layout_below="@id/mini_player_song"
+            android:textSize="14sp"
+            android:maxLines="1"
+            android:layout_toStartOf="@id/mini_player_playPause"
+            android:fontFamily="@font/spotify_bold" />
+
+    </RelativeLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:baselineAligned="false"
+        app:tabIndicatorFullWidth="true"
+        app:tabIndicatorGravity="center"
+        app:tabTextColor="@color/white"
+        app:tabSelectedTextColor="@color/black"
+        app:tabIndicatorHeight="100dp"
+        app:tabIndicatorAnimationDuration="@integer/material_motion_duration_medium_1"
+        app:tabIndicatorAnimationMode="fade"
+        app:tabIndicatorColor="@color/white"
+        app:tabIndicator="@drawable/tab_gradient"
+        />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tab_layout"
+        android:layout_above="@+id/mini_player_layout"/>
+
+
+</RelativeLayout>
