@@ -97,7 +97,10 @@ public class PlayerActivity extends AppCompatActivity implements
             song_name.setSelected(false);
             artist_name.setSelected(false);
         } else {
+            song_name.setText(player_songs_list.get(position).getTitle());
             song_name.setSelected(true);
+
+            artist_name.setText(player_songs_list.get(position).getArtist());
             artist_name.setSelected(true);
         }
 
@@ -274,7 +277,10 @@ public class PlayerActivity extends AppCompatActivity implements
                         playerService.showNotification(R.drawable.notification_play, 1F);
                     }
 
+                    song_name.setText(player_songs_list.get(position).getTitle());
                     song_name.setSelected(true);
+
+                    artist_name.setText(player_songs_list.get(position).getArtist());
                     artist_name.setSelected(true);
                 }
             }

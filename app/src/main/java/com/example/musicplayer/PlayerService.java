@@ -161,7 +161,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                         if(!isPlaying()){
                             showNotification(R.drawable.notification_play, 0F);
                         } else {
-                            showNotification(R.drawable.notification_play, 1F);
+                            showNotification(R.drawable.notification_pause, 1F);
                         }
                         miniPlayerActions.refresh();
                     }
