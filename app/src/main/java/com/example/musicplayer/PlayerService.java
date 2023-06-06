@@ -143,7 +143,6 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     public int onStartCommand(Intent intent, int flags, int startId) {
         int myPos = intent.getIntExtra("servicePosition", -1);
 
-        setArtBitmap(myPos);
 
         String actionName = intent.getStringExtra("ActionName");
         fromNotification = intent.getBooleanExtra("fromNotification", false);
@@ -152,6 +151,8 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         if(myPos != -1){
             playMedia(myPos);
         }
+
+        setArtBitmap(position);
         if(actionName != null){
             switch(actionName){
                 case "playPause" -> {
@@ -168,12 +169,16 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 case "next" -> {
                     if(playerActions != null){
                         playerActions.nextButtonClicked(false);
+
+                        setArtBitmap(position);
                         miniPlayerActions.refresh();
                     }
                 }
                 case "previous" -> {
                     if(playerActions != null){
                         playerActions.previousButtonClicked();
+
+                        setArtBitmap(position);
                         miniPlayerActions.refresh();
                     }
                 }
@@ -224,6 +229,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         createMediaPlayer(position);
         start();
         miniPlayerActions.refresh();
+        setArtBitmap(position);
 
         onComplete();
     }
