@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 
+import android.os.Looper;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -43,6 +44,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerActivity extends AppCompatActivity implements
         PlayingActions, ServiceConnection {
@@ -180,7 +182,7 @@ public class PlayerActivity extends AppCompatActivity implements
                     if(running){
                         int mCurrentPosition = playerService.getCurrentPosition() / 1000;
                         seekBar.setProgress(mCurrentPosition);
-                        timePlayed.setText(formattedTime(mCurrentPosition));
+                        timePlayed.setText(formattedTime(mCurrentPosition * 1000));
                     }
                 }
                 handler.postDelayed(this, 1);
@@ -199,7 +201,7 @@ public class PlayerActivity extends AppCompatActivity implements
                     if(running){
                         int mCurrentPosition = playerService.getCurrentPosition() / 1000;
                         seekBar.setProgress(mCurrentPosition);
-                        timePlayed.setText(formattedTime(mCurrentPosition));
+                        timePlayed.setText(formattedTime(mCurrentPosition * 1000));
                     }
                 }
                 handler.postDelayed(this, 1);
@@ -374,7 +376,9 @@ public class PlayerActivity extends AppCompatActivity implements
     }
 
     private String formattedTime(int time) {
-        return String.format("%02d:%02d", time / 60, time % 60); // milliseconds to "minutes:seconds" format
+        return String.format("%02d:%02d",
+                TimeUnit.MILLISECONDS.toMinutes(time) % TimeUnit.HOURS.toMinutes(1),
+                TimeUnit.MILLISECONDS.toSeconds(time) % TimeUnit.MINUTES.toSeconds(1)); // milliseconds to "minutes:seconds" format
     }
 
     private void initializeViews() {
@@ -404,7 +408,9 @@ public class PlayerActivity extends AppCompatActivity implements
 
         song_name.setText(player_songs_list.get(position).getTitle());
         artist_name.setText(player_songs_list.get(position).getArtist());
-        timeTotal.setText(formattedTime(Integer.parseInt(player_songs_list.get(position).getDuration()) / 1000));
+
+        song_name.setSelectAllOnFocus(true);
+        timeTotal.setText(formattedTime(Integer.parseInt(player_songs_list.get(position).getDuration())));
 
         byte[] songArt = retriever.getEmbeddedPicture();
         if(songArt != null){

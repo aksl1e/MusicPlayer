@@ -54,7 +54,10 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.MyVieHolder>
         }
         else {
             byte[] songArtAttempt = getAlbumArt(mFiles.get(position).getPath());
-            Bitmap bitmapAttempt = BitmapFactory.decodeByteArray(songArtAttempt, 0, songArtAttempt.length);
+            Bitmap bitmapAttempt = null;
+            if(songArtAttempt != null){
+                bitmapAttempt = BitmapFactory.decodeByteArray(songArtAttempt, 0, songArtAttempt.length);
+            }
 
             Glide.with(mContext).asBitmap()
                     .load(bitmapAttempt != null ? bitmapAttempt : R.drawable.def_song_art)

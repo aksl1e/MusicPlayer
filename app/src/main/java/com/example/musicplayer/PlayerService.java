@@ -48,6 +48,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     MediaSessionCompat mediaSessionCompat;
 
     static boolean isKilled = false;
+    boolean wasPlaying = false;
 
 
     int position = -1;
@@ -64,7 +65,6 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onCreate() {
-        isKilled = false;
         super.onCreate();
         mediaSessionCompat = new MediaSessionCompat(getBaseContext(), "My Audio");
 
@@ -111,11 +111,16 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     @Override
     public void onAudioFocusChange(int focusChange) {
         if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-            mediaPlayer.start();
+            if(wasPlaying){
+                mediaPlayer.start();
+                wasPlaying = false;
+            }
         } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
             if(isPlaying()){
+                wasPlaying = true;
                 mediaPlayer.pause();
             }
+            mediaPlayer.pause();
         } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
             if(isPlaying()){
                 playerActions.playPauseButtonClicked();

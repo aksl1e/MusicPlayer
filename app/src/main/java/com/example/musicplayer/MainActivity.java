@@ -79,11 +79,21 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
         miniPlayer_artist = findViewById(R.id.mini_player_artist);
         miniPlayer_img = findViewById(R.id.mini_player_img);
 
+        miniPlayer_song.setSelected(true);
+        miniPlayer_artist.setSelected(true);
+
         miniPlayer_next = findViewById(R.id.mini_player_next);
         miniPlayer_playPause = findViewById(R.id.mini_player_playPause);
 
         miniPlayer_playPause.setOnClickListener(view -> {
             playerService.playerActions.playPauseButtonClicked();
+            if(playerService.isPlaying()) {
+                miniPlayer_song.setSelected(true);
+                miniPlayer_artist.setSelected(true);
+            } else {
+                miniPlayer_song.setSelected(false);
+                miniPlayer_artist.setSelected(false);
+            }
             refresh();
         });
 
@@ -162,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == REQUEST_CODE && (grantResults[0] == PackageManager.PERMISSION_GRANTED || grantResults[1] == PackageManager.PERMISSION_GRANTED)){
-            Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show();
             allSongs = getAllAudio(this);
             initViewPager();
         }
