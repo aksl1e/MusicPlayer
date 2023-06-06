@@ -47,7 +47,6 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     MiniPlayerActions miniPlayerActions;
     MediaSessionCompat mediaSessionCompat;
 
-    static boolean isKilled = false;
     boolean wasPlaying = false;
 
 
@@ -60,6 +59,8 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     static AudioFocusRequest focusRequest;
 
     AudioAttributes playbackAttributes;
+
+    Bitmap artBitmap;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -80,7 +81,6 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 .setAcceptsDelayedFocusGain(true)
                 .setOnAudioFocusChangeListener(this)
                 .build();
-
 
     }
 
@@ -114,11 +114,13 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
             if(wasPlaying){
                 mediaPlayer.start();
                 wasPlaying = false;
+                showNotification(R.drawable.notification_pause, 1F);
             }
         } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
             if(isPlaying()){
                 wasPlaying = true;
                 mediaPlayer.pause();
+                showNotification(R.drawable.notification_play, 0F);
             }
             mediaPlayer.pause();
         } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
@@ -140,6 +142,9 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         int myPos = intent.getIntExtra("servicePosition", -1);
+
+        setArtBitmap(myPos);
+
         String actionName = intent.getStringExtra("ActionName");
         fromNotification = intent.getBooleanExtra("fromNotification", false);
         audioFocusRequest = audioManager.requestAudioFocus(focusRequest);
@@ -152,6 +157,11 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 case "playPause" -> {
                     if(playerActions != null){
                         playerActions.playPauseButtonClicked();
+                        if(!isPlaying()){
+                            showNotification(R.drawable.notification_play, 0F);
+                        } else {
+                            showNotification(R.drawable.notification_play, 1F);
+                        }
                         miniPlayerActions.refresh();
                     }
                 }
@@ -171,6 +181,16 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         }
         return START_STICKY;
 
+    }
+
+    private void setArtBitmap(int myPos) {
+        if(imagesCache.getBitmapFromMemCache(player_songs_list.get(myPos).getPath()) == null){
+            byte[] artByte = getAlbumArt(player_songs_list.get(myPos).getPath());
+            artBitmap = artByte != null ? BitmapFactory.decodeByteArray(artByte, 0, artByte.length)
+                    : BitmapFactory.decodeResource(getResources(), R.drawable.def_song_art);
+        } else {
+            artBitmap = imagesCache.getBitmapFromMemCache(player_songs_list.get(myPos).getPath());
+        }
     }
 
     private void playMedia(int startPosition) {
@@ -278,11 +298,6 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
             }
 
             @Override
-            public void onPrepare() {
-                super.onPrepare();
-            }
-
-            @Override
             public void onSkipToNext() {
                 super.onSkipToNext();
                 playerActions.nextButtonClicked(false);
@@ -326,6 +341,9 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
         Intent intent = new Intent(this, PlayerActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.putExtra("position", position);
+        if(!isPlaying()){
+            intent.putExtra("isPlaying", false);
+        }
         intent.putExtra("fromNotification", true);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
@@ -350,18 +368,11 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
 
 
 
-        Bitmap picture = imagesCache.getBitmapFromMemCache(player_songs_list.get(position).getPath());
-        if(picture == null){
-            byte[] pictureByte = getAlbumArt(player_songs_list.get(position).getPath());
-            picture = pictureByte != null ? BitmapFactory.decodeByteArray(pictureByte, 0, pictureByte.length)
-                    : BitmapFactory.decodeResource(getResources(), R.drawable.def_player_img);
-        }
-
         int[] actions = {0,1,2};
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID_2)
                 .setSmallIcon(R.drawable.app_icon_def)
-                .setLargeIcon(picture)
+                .setLargeIcon(artBitmap)
                 .setContentTitle(player_songs_list.get(position).getTitle())
                 .setContentText(player_songs_list.get(position).getArtist())
                 .addAction(R.drawable.notification_previous, "Previous", PREV_Pending)
@@ -373,7 +384,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                         .setShowActionsInCompactView(actions)
                         .setMediaSession(mediaSessionCompat.getSessionToken()))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setOnlyAlertOnce(true)
                 .setSilent(true);
 
@@ -398,6 +409,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
 
         return art;
     }
+
 
     private int getCurrentState() {
         if(isPlaying()){

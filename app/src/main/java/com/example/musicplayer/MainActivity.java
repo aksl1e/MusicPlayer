@@ -104,8 +104,11 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
 
         miniPlayerContainer.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, PlayerActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             intent.putExtra("position", playerService.position);
+            if(!playerService.isPlaying()){
+                intent.putExtra("isPlaying", false);
+            }
             intent.putExtra("intentBy", "fromMainActivity");
             startActivity(intent);
         });
@@ -117,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
         if(imagesCache.getBitmapFromMemCache(currentPlayingSong.getPath()) != null){
             miniPlayer_img.setImageBitmap(imagesCache.getBitmapFromMemCache(currentPlayingSong.getPath()));
         } else {
-            miniPlayer_img.setImageResource(R.drawable.def_player_img);
+            miniPlayer_img.setImageResource(R.drawable.def_song_art);
         }
 
         miniPlayer_song.setText(currentPlayingSong.getTitle());
@@ -143,6 +146,8 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
 
         if(mediaPlayer != null){
             miniPlayerContainer.setVisibility(View.VISIBLE);
+            miniPlayer_song.setSelected(true);
+            miniPlayer_artist.setSelected(true);
             refresh();
         }
         super.onResume();
@@ -221,8 +226,14 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
         if(playerService != null) {
             if (playerService.isPlaying()) {
                 miniPlayerRefresh(R.drawable.notification_pause);
+
+                miniPlayer_song.setSelected(true);
+                miniPlayer_artist.setSelected(true);
             } else {
                 miniPlayerRefresh(R.drawable.notification_play);
+
+                miniPlayer_song.setSelected(false);
+                miniPlayer_artist.setSelected(false);
             }
         }
     }

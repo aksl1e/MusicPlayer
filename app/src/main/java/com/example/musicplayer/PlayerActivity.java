@@ -77,6 +77,7 @@ public class PlayerActivity extends AppCompatActivity implements
 
         position = getIntent().getIntExtra("position", -1);
         intentBy = getIntent().getStringExtra("intentBy");
+        boolean isPlaying = getIntent().getBooleanExtra("isPlaying", true);
         boolean fromNotification = getIntent().getBooleanExtra("fromNotification", false);
 
         if(intentBy != null && intentBy.equals("fromAlbums")){
@@ -88,6 +89,16 @@ public class PlayerActivity extends AppCompatActivity implements
         if(player_songs_list != null){
             playPauseButton.setImageResource(R.drawable.player_pause);
             current_song_path = Uri.parse(player_songs_list.get(position).getPath());
+        }
+
+        if(!isPlaying){
+            playPauseButton.setImageResource(R.drawable.player_play_arrow);
+
+            song_name.setSelected(false);
+            artist_name.setSelected(false);
+        } else {
+            song_name.setSelected(true);
+            artist_name.setSelected(true);
         }
 
         if(intentBy != null && !intentBy.equals("fromMainActivity")){
@@ -216,6 +227,7 @@ public class PlayerActivity extends AppCompatActivity implements
         playThreadButton();
         prevThreadButton();
         nextThreadButton();
+
         super.onResume();
     }
 
@@ -244,6 +256,9 @@ public class PlayerActivity extends AppCompatActivity implements
             seekBarUpdate(seekBar);
 
             playerService.showNotification(R.drawable.notification_play, 0F);
+
+            song_name.setSelected(false);
+            artist_name.setSelected(false);
         }
         else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -258,6 +273,9 @@ public class PlayerActivity extends AppCompatActivity implements
                     } else {
                         playerService.showNotification(R.drawable.notification_play, 1F);
                     }
+
+                    song_name.setSelected(true);
+                    artist_name.setSelected(true);
                 }
             }
         }
@@ -384,6 +402,10 @@ public class PlayerActivity extends AppCompatActivity implements
     private void initializeViews() {
         song_name = findViewById(R.id.player_song_name);
         artist_name = findViewById(R.id.player_artist_name);
+
+        song_name.setSelectAllOnFocus(true);
+        artist_name.setSelectAllOnFocus(true);
+
         timeTotal = findViewById(R.id.seek_bar_timeTotal);
         timePlayed = findViewById(R.id.seek_bar_timePlayed);
 
@@ -409,7 +431,6 @@ public class PlayerActivity extends AppCompatActivity implements
         song_name.setText(player_songs_list.get(position).getTitle());
         artist_name.setText(player_songs_list.get(position).getArtist());
 
-        song_name.setSelectAllOnFocus(true);
         timeTotal.setText(formattedTime(Integer.parseInt(player_songs_list.get(position).getDuration())));
 
         byte[] songArt = retriever.getEmbeddedPicture();

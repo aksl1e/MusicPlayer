@@ -19,6 +19,7 @@
         android:roundIcon="@drawable/app_icon_round"
         android:icon="@drawable/app_icon_def"
         android:label="@string/app_name"
+        android:hardwareAccelerated="true"
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:appCategory="audio"
