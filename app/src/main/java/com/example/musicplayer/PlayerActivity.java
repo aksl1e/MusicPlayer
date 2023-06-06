@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 
-import android.os.Looper;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -84,11 +83,26 @@ public class PlayerActivity extends AppCompatActivity implements
             player_songs_list = albumSongs;
         } else if(intentBy != null && intentBy.equals("fromSongs")){
             player_songs_list = allSongs;
+        } else {
+            player_songs_list = allSongs;
         }
 
         if(player_songs_list != null){
             playPauseButton.setImageResource(R.drawable.player_pause);
             current_song_path = Uri.parse(player_songs_list.get(position).getPath());
+        }
+
+
+        if(intentBy != null && !intentBy.equals("fromMainActivity")){
+            Intent intent = new Intent(this, PlayerService.class);
+            intent.putExtra("servicePosition", position);
+            intent.putExtra("fromNotification", fromNotification);
+            if (intentBy != null && intentBy.equals("albumDetails")) {
+                intent.putExtra("intentBy", "fromAlbums");
+            } else if (intentBy != null && intentBy.equals("fromSongs")){
+                intent.putExtra("intentBy", "fromSongs");
+            }
+            startService(intent);
         }
 
         if(!isPlaying){
@@ -103,19 +117,6 @@ public class PlayerActivity extends AppCompatActivity implements
             artist_name.setText(player_songs_list.get(position).getArtist());
             artist_name.setSelected(true);
         }
-
-        if(intentBy != null && !intentBy.equals("fromMainActivity")){
-            Intent intent = new Intent(this, PlayerService.class);
-            intent.putExtra("servicePosition", position);
-            intent.putExtra("fromNotification", fromNotification);
-            if (intentBy != null && intentBy.equals("albumDetails")) {
-                intent.putExtra("intentBy", "fromAlbums");
-            } else if (intentBy != null && intentBy.equals("fromSongs")){
-                intent.putExtra("intentBy", "fromSongs");
-            }
-            startService(intent);
-        }
-
 
         seekBarSetting(seekBar);
         metaDataSetting(current_song_path);
