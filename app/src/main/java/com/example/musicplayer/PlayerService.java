@@ -170,7 +170,6 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                     if(playerActions != null){
                         playerActions.nextButtonClicked(false);
 
-                        setArtBitmap(position);
                         miniPlayerActions.refresh();
                     }
                 }
@@ -178,7 +177,6 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
                     if(playerActions != null){
                         playerActions.previousButtonClicked();
 
-                        setArtBitmap(position);
                         miniPlayerActions.refresh();
                     }
                 }
@@ -188,7 +186,7 @@ public class PlayerService extends Service implements MediaPlayer.OnCompletionLi
 
     }
 
-    private void setArtBitmap(int myPos) {
+    void setArtBitmap(int myPos) {
         if(imagesCache.getBitmapFromMemCache(player_songs_list.get(myPos).getPath()) == null){
             byte[] artByte = getAlbumArt(player_songs_list.get(myPos).getPath());
             artBitmap = artByte != null ? BitmapFactory.decodeByteArray(artByte, 0, artByte.length)

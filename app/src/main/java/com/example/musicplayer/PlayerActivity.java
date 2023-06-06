@@ -329,6 +329,8 @@ public class PlayerActivity extends AppCompatActivity implements
                 }
             }
         }
+
+        playerService.setArtBitmap(position);
         playerService.showNotification(R.drawable.notification_pause, 1F);
     }
 
@@ -380,6 +382,8 @@ public class PlayerActivity extends AppCompatActivity implements
                  }
             }
         }
+
+        playerService.setArtBitmap(position);
         playerService.showNotification(R.drawable.notification_pause, 1F);
     }
 
