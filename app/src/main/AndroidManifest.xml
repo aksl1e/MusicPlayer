@@ -28,14 +28,17 @@
         tools:targetApi="tiramisu">
         <activity
             android:name=".AlbumSongs"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".PlayerActivity"
             android:exported="false"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -44,7 +47,7 @@
         </activity>
         <service
             android:name=".PlayerService"
-            android:enabled="true"/>
+            android:enabled="true" />
         <receiver android:name="com.example.musicplayer.NotificationReceiver" android:enabled="true"
             android:exported="false">
             <intent-filter>
