@@ -6,6 +6,7 @@ import android.media.MediaMetadataRetriever;
 import android.util.LruCache;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MyImagesCache extends LruCache<String, Bitmap> {
     public MyImagesCache(int maxSize) {
@@ -23,6 +24,18 @@ public class MyImagesCache extends LruCache<String, Bitmap> {
         if(art != null){
             Bitmap bitmap = BitmapFactory.decodeByteArray(art,0 , art.length);
             addBitmapToMemoryCache(path, bitmap);
+        }
+    }
+
+    public void cacheAlbumImages(ArrayList<SongData> fromList){
+        for (SongData song:
+             fromList) {
+            byte[] art = getAlbumArt(song.getPath());
+
+            if(art != null){
+                Bitmap bitmap = BitmapFactory.decodeByteArray(art,0 , art.length);
+                addBitmapToMemoryCache(song.getPath(), bitmap);
+            }
         }
     }
 

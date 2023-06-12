@@ -3,6 +3,7 @@ package com.example.musicplayer;
 import static com.example.musicplayer.AlbumSongsAdapter.albumSongs;
 
 import static com.example.musicplayer.MainActivity.allSongs;
+import static com.example.musicplayer.MainActivity.imagesCache;
 import static com.example.musicplayer.MainActivity.isOnRepeat;
 import static com.example.musicplayer.MainActivity.isOnShuffle;
 import static com.example.musicplayer.PlayerService.audioManager;
@@ -17,10 +18,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.media.AudioManager;
@@ -444,7 +447,8 @@ public class PlayerActivity extends AppCompatActivity implements
 
         timeTotal.setText(formattedTime(Integer.parseInt(player_songs_list.get(position).getDuration())));
 
-        byte[] songArt = retriever.getEmbeddedPicture();
+        Bitmap songArt = imagesCache.getBitmapFromMemCache(player_songs_list.get(position).getPath());
+
         if(songArt != null){
             makeGradientEffectWithPalette(songArt);
         }
@@ -465,10 +469,9 @@ public class PlayerActivity extends AppCompatActivity implements
         return bitmap;
     }
 
-    private void makeGradientEffectWithPalette(byte[] art) {
-        Bitmap bitmap = BitmapFactory.decodeByteArray(art, 0, art.length);
-        ImageAnimation(this, cover_art, bitmap);
-        Palette.from(bitmap).generate(palette -> {
+    private void makeGradientEffectWithPalette(Bitmap songArt) {
+        ImageAnimation(this, cover_art, songArt);
+        Palette.from(songArt).generate(palette -> {
             assert palette != null;
             Palette.Swatch swatch = palette.getDominantSwatch();
             ImageView gradient = findViewById(R.id.player_imageViewGradient);
@@ -487,6 +490,7 @@ public class PlayerActivity extends AppCompatActivity implements
                 artist_name.setTextColor(swatch.getBodyTextColor());
                 timeTotal.setTextColor(swatch.getBodyTextColor());
                 timePlayed.setTextColor(swatch.getBodyTextColor());
+                seekBar.setProgressBackgroundTintList(ColorStateList.valueOf(swatch.getBodyTextColor()));
             }
             else {
 

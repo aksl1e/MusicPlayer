@@ -138,6 +138,18 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
         final int cacheSize = maxMemory / 2;
         imagesCache = new MyImagesCache(cacheSize);
     }
+    void cacheLoad(ArrayList<SongData> fromList){
+        Thread cacheThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                imagesCache.cacheAlbumImages(fromList);
+            }
+        });
+        cacheThread.start();
+    }
+
+
+
 
     @Override
     protected void onResume() {
@@ -273,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
         }
     }
 
-    public static ArrayList<SongData> getAllAudio(Context context){
+    public ArrayList<SongData> getAllAudio(Context context){
         ArrayList<SongData> result = new ArrayList<>();
         Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         ArrayList<String> duplicate = new ArrayList<>();
@@ -298,7 +310,6 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
                         cursor.getString(5));
                 if(songIsValid(song, result)){
                     result.add(song);
-                    imagesCache.cacheAlbumImage(result.get(result.size() - 1).getPath());
                     if(!duplicate.contains(song.getAlbum())){
                         albums.add(song);
                         duplicate.add(song.getAlbum());
@@ -307,6 +318,8 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
             }
             cursor.close();
         }
+        cacheLoad(result);
+
         return result;
     }
 

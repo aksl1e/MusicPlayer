@@ -33,13 +33,7 @@ public class AlbumFragment extends Fragment {
             albumAdapter = new AlbumAdapter(getContext(), albums);
             recyclerView.setAdapter(albumAdapter);
             recyclerView.setHasFixedSize(true);
-            recyclerView.setItemViewCacheSize(50);
-            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2){
-                @Override
-                protected int getExtraLayoutSpace(RecyclerView.State state) {
-                    return 5000;
-                }
-            });
+            recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
         }
         return view;

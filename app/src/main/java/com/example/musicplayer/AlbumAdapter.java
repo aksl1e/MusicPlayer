@@ -1,7 +1,10 @@
 package com.example.musicplayer;
 
+import static com.example.musicplayer.MainActivity.imagesCache;
+
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,20 +47,13 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyHolder>{
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
         holder.album_name.setText(aFiles.get(position).getAlbum());
 
-        byte[] albumArt = getAlbumArt(aFiles.get(position).getPath());
+        Bitmap albumArt = imagesCache.getBitmapFromMemCache(aFiles.get(position).getPath());
 
+        Glide.with(aContext).asBitmap()
+                .load(albumArt)
+                .fallback(R.drawable.player_icon)
+                .into(holder.album_img);
 
-        if(albumArt != null){
-
-            Glide.with(aContext).asBitmap()
-                    .load(albumArt)
-                    .into(holder.album_img);
-        }
-        else {
-            Glide.with(aContext).asBitmap()
-                    .load(R.drawable.player_icon)
-                    .into(holder.album_img);
-        }
 
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(aContext, AlbumSongs.class);
@@ -71,22 +67,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.MyHolder>{
     public int getItemCount() {
         return aFiles.size();
     }
-
-    byte[] getAlbumArt(String uri) {
-        byte[] art = null;
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-
-        try {
-            retriever.setDataSource(uri);
-            art = retriever.getEmbeddedPicture();
-            retriever.release();
-        } catch (IOException e) {
-            Log.e("getEmbeddedPicture failed", "path:" + uri);
-        }
-
-        return art;
-    }
-
     public static class MyHolder extends RecyclerView.ViewHolder{
         ImageView album_img;
         TextView album_name;

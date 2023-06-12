@@ -33,7 +33,6 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.MyVieHolder>
     }
 
 
-
     @NonNull
     @Override
     public SongsAdapter.MyVieHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -47,22 +46,12 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.MyVieHolder>
 
         Bitmap albumArt = imagesCache.getBitmapFromMemCache(mFiles.get(position).getPath());
 
-        if(albumArt != null){
-            Glide.with(mContext).asBitmap()
-                    .load(albumArt)
-                    .into(holder.album_art);
-        }
-        else {
-            byte[] songArtAttempt = getAlbumArt(mFiles.get(position).getPath());
-            Bitmap bitmapAttempt = null;
-            if(songArtAttempt != null){
-                bitmapAttempt = BitmapFactory.decodeByteArray(songArtAttempt, 0, songArtAttempt.length);
-            }
+        Glide.with(mContext).asBitmap()
+                .placeholder(R.drawable.def_song_art)
+                .load(albumArt)
+                .fallback(R.drawable.def_song_art)
+                .into(holder.album_art);
 
-            Glide.with(mContext).asBitmap()
-                    .load(bitmapAttempt != null ? bitmapAttempt : R.drawable.def_song_art)
-                    .into(holder.album_art);
-        }
 
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(mContext, PlayerActivity.class);
@@ -77,7 +66,7 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.MyVieHolder>
         return mFiles.size();
     }
 
-    public static class MyVieHolder extends RecyclerView.ViewHolder{
+    public static class MyVieHolder extends RecyclerView.ViewHolder {
         TextView file_name;
         ImageView album_art;
 
@@ -88,18 +77,4 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.MyVieHolder>
         }
     }
 
-    byte[] getAlbumArt(String uri) {
-        byte[] art = null;
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-
-        try {
-            retriever.setDataSource(uri);
-            art = retriever.getEmbeddedPicture();
-            retriever.release();
-        } catch (Exception e) {
-            Log.e("getEmbeddedPicture failed", "path:" + uri);
-        }
-
-        return art;
-    }
 }

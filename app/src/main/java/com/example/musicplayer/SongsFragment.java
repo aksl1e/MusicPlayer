@@ -34,13 +34,7 @@ public class SongsFragment extends Fragment {
            songsAdapter = new SongsAdapter(getContext(), allSongs);
            recyclerView.setAdapter(songsAdapter);
            recyclerView.setHasFixedSize(true);
-           recyclerView.setItemViewCacheSize(100);
-           recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false){
-               @Override
-               protected int getExtraLayoutSpace(RecyclerView.State state) {
-                   return 5000;
-               }
-           });
+           recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
         }
         return view;
