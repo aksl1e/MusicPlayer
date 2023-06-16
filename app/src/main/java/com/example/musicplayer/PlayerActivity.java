@@ -79,6 +79,7 @@ public class PlayerActivity extends AppCompatActivity implements
 
         position = getIntent().getIntExtra("position", -1);
         intentBy = getIntent().getStringExtra("intentBy");
+        boolean fromMiniPlayer = getIntent().getBooleanExtra("fromMiniPlayer", false);
         boolean isPlaying = getIntent().getBooleanExtra("isPlaying", true);
         boolean fromNotification = getIntent().getBooleanExtra("fromNotification", false);
 

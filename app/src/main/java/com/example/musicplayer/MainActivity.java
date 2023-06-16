@@ -1,5 +1,6 @@
 package com.example.musicplayer;
 
+import static com.example.musicplayer.AlbumSongsAdapter.albumSongs;
 import static com.example.musicplayer.PlayerService.mediaPlayer;
 
 import androidx.annotation.NonNull;
@@ -109,7 +110,13 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
             if(!playerService.isPlaying()){
                 intent.putExtra("isPlaying", false);
             }
-            intent.putExtra("intentBy", "fromMainActivity");
+            if(playerService.songs_service.equals(albumSongs)){
+                intent.putExtra("intentBy", "fromAlbums");
+            } else {
+                intent.putExtra("intentBy", "fromSongs");
+            }
+            intent.putExtra("fromMiniPlayer", true);
+
             startActivity(intent);
         });
     }
@@ -312,6 +319,7 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
                     result.add(song);
                     if(!duplicate.contains(song.getAlbum())){
                         albums.add(song);
+                        //cacheLoadOne(song);
                         duplicate.add(song.getAlbum());
                     }
                 }
@@ -321,6 +329,16 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
         cacheLoad(result);
 
         return result;
+    }
+
+    private void cacheLoadOne(SongData song) {
+        Thread cacheThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                imagesCache.cacheAlbumImage(song.getPath());
+            }
+        });
+        cacheThread.start();
     }
 
 
@@ -333,7 +351,9 @@ public class MainActivity extends AppCompatActivity implements MiniPlayerActions
         }
 
         for(int i = 0; i < inList.size(); i++){
-            if(song.getTitle().equals(inList.get(i).getTitle()) && song.getArtist().equals(inList.get(i).getArtist()) && song.getDuration().equals(inList.get(i).getDuration())){
+            if(song.getTitle().equals(inList.get(i).getTitle()) &&
+                    song.getArtist().equals(inList.get(i).getArtist()) &&
+                    song.getDuration().equals(inList.get(i).getDuration())){
                 return false;
             }
         }
